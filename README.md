@@ -8,6 +8,8 @@ Needs Steve Edson's fantastic [bitbar-php](https://github.com/SteveEdson/bitbar-
 
 That's the only dependency, and Steve's script has no dependencies, other than composer in your php installation.
 
+Then put `bitbar-worldcup.1m.php` in your bitbar scripts folder.
+
 ## Screenshot
 
 ![BitBar WorldCup](/bitbar-worldcup.png?raw=true "Screenshot")
