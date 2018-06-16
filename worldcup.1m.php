@@ -17,9 +17,9 @@
  * <bitbar.author>Daniel Goldsmith</bitbar.author>
  * <bitbar.author.github>dg01d</bitbar.author.github>
  * <bitbar.desc>Shows current and daily scores from the 2018 World Cup. Needs Steve Edson's bitbar-php: https://github.com/SteveEdson/bitbar-php </bitbar.desc>
- * <bitbar.image>http://www.hosted-somewhere/pluginimage</bitbar.image>
+ * <bitbar.image>https://raw.githubusercontent.com/dg01d/bitbar-worldcup/master/bitbar-worldcup.png</bitbar.image>
  * <bitbar.dependencies>php,bitbar-php</bitbar.dependencies>
- * <bitbar.abouturl>https://ascraeus.org/</bitbar.abouturl>
+ * <bitbar.abouturl>https://github.com/dg01d/bitbar-worldcup</bitbar.abouturl>
  * Instructions: Install bitbar-php following the instructions on that project's github page.
  * Uses the wonderful World Cup API provided by http://worldcup.sfg.io
  */

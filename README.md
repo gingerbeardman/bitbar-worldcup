@@ -1,6 +1,6 @@
 # BitBar-WorldCup
 
-Small script to show current/daily World Cup information in your [BitBar](https://getbitbar.com).
+Small script to show current/daily World Cup information from https://github.com/estiens/world_cup_json in your [BitBar](https://getbitbar.com).
 
 ## Requirements
 
@@ -20,4 +20,4 @@ All data comes from the [JSON WorldCup API](http://worldcup.sfg.io)
 
 ## Credits
 
-[Matt Ryer](https://github.com/matryer), [Steve Edson](https://github.com/SteveEdson), and the wonderful [Eric Steins](https://github.com/estiens).
+[Matt Ryer](https://github.com/matryer), [Steve Edson](https://github.com/SteveEdson), and [Eric Stiens](https://github.com/estiens).
