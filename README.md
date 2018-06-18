@@ -14,7 +14,9 @@ Then put `bitbar-worldcup.1m.php` in your bitbar scripts folder.
 
 ![BitBar WorldCup](/bitbar-worldcup.png?raw=true "Screenshot")
 
-A blue match is completed. Current game shows elapsed time in the dropdown.
+Active game shows in menubar, using the FIFA abbreviations for that authentic feel 🙂.
+
+Completed and active games display goalscorers in dropdown. Completed games link to FIFA's [Official Match Reports](https://www.fifa.com/worldcup/matches/).
 
 All data comes from the [JSON WorldCup API](http://worldcup.sfg.io)
 
