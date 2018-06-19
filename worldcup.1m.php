@@ -11,7 +11,7 @@
  * @license  https://opensource.org/licenses/FPL-1.0.0 0BSD
  * @link     https://github.com/dg01d/bitbar-worldcup
  * @category Utility
- * @version  2.0
+ * @version  2.1
  * <bitbar.title>World Cup 2018</bitbar.title>
  * <bitbar.version>v1.0</bitbar.version>
  * <bitbar.author>Daniel Goldsmith</bitbar.author>
@@ -97,13 +97,13 @@ if (!empty($todayData)) {
         $team2code =  $todayData[$n]['away_team']['code'];
         $team2flag = $flags[$team2code];
         $team2s = $todayData[$n]['away_team']['goals'];
-        $scores = "$team1code $team1flag $team1s – $team2s $team2flag $team2code | ansi=true font=\"SF Mono\"";
-        $match = "https://www.fifa.com/worldcup/matches/match/" . $todayData[$n]['fifa_id'] . "/#match-summary";
-        if (($todayData[$n]['status']) !== "in progress") {
+        $scores = "$team1code $team1flag $team1s – $team2s $team2flag $team2code";
+        $match = "\"https://www.fifa.com/worldcup/matches/match/" . $todayData[$n]['fifa_id'] . "/#match-summary\"";
+        if (($todayData[$n]['status']) == "in progress") {
             $time = $todayData[$n]['time'];
-            $scores = $scores . " " . $time . " ⚽";
+            $scores = $scores . " " . $time . " ⚽| href=$match";
         } else {
-            $scores .= " href=$match";
+            $scores .= " | href=$match";
         }
         if (($todayData[$n]['status'] == "completed") || ($todayData[$n]['status'] == "in progress")) {
             $line = $bb->newLine();
@@ -112,7 +112,7 @@ if (!empty($todayData)) {
             $arraySortEvents = array_msort($arrayEvents, array('id'=>SORT_ASC));
             foreach ($arraySortEvents as $val) {
                 if (in_array($val['type_of_event'], array('goal', "goal-own", "goal-penalty"))) {
-                    $scores .= "\n";
+                    $scores .= "\n\033[35m";
                     $scores .= $val['player'] . " " . $val['time'];
                 }
                 if ($val['type_of_event'] == "goal-penalty") {
@@ -122,7 +122,7 @@ if (!empty($todayData)) {
                     $scores .= " (OG)";
                 }
                 if (in_array($val['type_of_event'], array('red-card', "yellow-card"))) {
-                    $scores .= "\n";
+                    $scores .= "\n\033[35m";
                     $scores .= $val['player'] . " " . $val['time'];
                 }
                 if ($val['type_of_event'] == "yellow-card") {
@@ -131,7 +131,7 @@ if (!empty($todayData)) {
                 if ($val['type_of_event'] == "red-card") {
                     $scores .= " \033[1;31m◼\033[0m";
                 }
-                $scores .= " | size=10";
+                $scores .= " | size=11";
             }
             $comGame = $line
                 ->setText($scores)
@@ -141,7 +141,7 @@ if (!empty($todayData)) {
             $line = $bb->newLine();
             $line
                 ->setText($scores)
-			    ->setFontFace("SF Mono")
+                ->setFontFace("SF Mono")
                 ->setDropdown(true)
                 ->show();
         }
