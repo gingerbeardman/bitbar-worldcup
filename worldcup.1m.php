@@ -71,7 +71,7 @@ if (!empty($data)) {
     $awayTeam = $data[0]['away_team']['code'];
     $awayTeamFlag = $flags[$awayTeam];
     $awayTeamScore = $data[0]['away_team']['goals'];
-    $scoreLine = "$homeTeamFlag $homeTeam $homeTeamScore : $awayTeamScore $awayTeamFlag $awayTeam";
+    $scoreLine = "$homeTeamFlag $homeTeamScore — $awayTeamScore $awayTeamFlag";
 } else {
     $scoreLine = "⚽";
 };
@@ -80,6 +80,7 @@ $line = $bb->newLine();
 
 $line
     ->setText($scoreLine)
+    ->setFontFace("SF Mono")
     ->show();
 
 $todayJson = file_get_contents("http://worldcup.sfg.io/matches/today");
@@ -96,13 +97,13 @@ if (!empty($todayData)) {
         $team2code =  $todayData[$n]['away_team']['code'];
         $team2flag = $flags[$team2code];
         $team2s = $todayData[$n]['away_team']['goals'];
-        $scores = "$team1flag $team1 $team1s : $team2s $team2flag $team2";
+        $scores = "$team1code $team1flag $team1s – $team2s $team2flag $team2code | ansi=true font=\"SF Mono\"";
         $match = "https://www.fifa.com/worldcup/matches/match/" . $todayData[$n]['fifa_id'] . "/#match-summary";
-        if (($todayData[$n]['status']) == "in progress") {
+        if (($todayData[$n]['status']) !== "in progress") {
             $time = $todayData[$n]['time'];
             $scores = $scores . " " . $time . " ⚽";
         } else {
-            $scores .= "| href=$match";
+            $scores .= " href=$match";
         }
         if (($todayData[$n]['status'] == "completed") || ($todayData[$n]['status'] == "in progress")) {
             $line = $bb->newLine();
@@ -112,14 +113,25 @@ if (!empty($todayData)) {
             foreach ($arraySortEvents as $val) {
                 if (in_array($val['type_of_event'], array('goal', "goal-own", "goal-penalty"))) {
                     $scores .= "\n";
-                    $scores .= $val['player'] . ": " . $val['time'];
+                    $scores .= $val['player'] . " " . $val['time'];
                 }
                 if ($val['type_of_event'] == "goal-penalty") {
-                    $scores .= " (p)";
+                    $scores .= " (P)";
                 }
                 if ($val['type_of_event'] == "goal-own") {
-                    $scores .= " (og)";
+                    $scores .= " (OG)";
                 }
+                if (in_array($val['type_of_event'], array('red-card', "yellow-card"))) {
+                    $scores .= "\n";
+                    $scores .= $val['player'] . " " . $val['time'];
+                }
+                if ($val['type_of_event'] == "yellow-card") {
+                    $scores .= " \033[1;33m◼\033[0m";
+                }
+                if ($val['type_of_event'] == "red-card") {
+                    $scores .= " \033[1;31m◼\033[0m";
+                }
+                $scores .= " | size=10";
             }
             $comGame = $line
                 ->setText($scores)
@@ -129,6 +141,7 @@ if (!empty($todayData)) {
             $line = $bb->newLine();
             $line
                 ->setText($scores)
+			    ->setFontFace("SF Mono")
                 ->setDropdown(true)
                 ->show();
         }
