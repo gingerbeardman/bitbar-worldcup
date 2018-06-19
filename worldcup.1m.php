@@ -9,7 +9,7 @@
  *
  * @author   Daniel Goldsmith <dgold@ascraeus.org>
  * @license  https://opensource.org/licenses/FPL-1.0.0 0BSD
- * @link     https://github.com/dg01d/worldcup-bitbar
+ * @link     https://github.com/dg01d/bitbar-worldcup
  * @category Utility
  * @version  1.0
  * <bitbar.title>World Cup 2018</bitbar.title>
