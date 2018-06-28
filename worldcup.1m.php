@@ -11,10 +11,10 @@
  * @license  https://opensource.org/licenses/FPL-1.0.0 0BSD
  * @link     https://github.com/dg01d/bitbar-worldcup
  * @category Utility
- * @version  2.1
+ * @version  2.2
  * <bitbar.title>World Cup 2018</bitbar.title>
- * <bitbar.version>v1.0</bitbar.version>
- * <bitbar.author>Daniel Goldsmith</bitbar.author>
+ * <bitbar.version>v2.1</bitbar.version>
+ * <bitbar.author>Daniel Goldsmith, Matt Sephton</bitbar.author>
  * <bitbar.author.github>dg01d</bitbar.author.github>
  * <bitbar.desc>Shows current and daily scores from the 2018 World Cup. Needs Steve Edson's bitbar-php: https://github.com/SteveEdson/bitbar-php </bitbar.desc>
  * <bitbar.image>https://raw.githubusercontent.com/dg01d/bitbar-worldcup/master/bitbar-worldcup.png</bitbar.image>
@@ -63,24 +63,25 @@ $bb = new BitBar();
 $json = file_get_contents("http://worldcup.sfg.io/matches/current");
 $data = json_decode($json, true);
 
-
 if (!empty($data)) {
-    $homeTeam = $data[0]['home_team']['code'];
-    $homeTeamFlag= $flags[$homeTeam];
-    $homeTeamScore = $data[0]['home_team']['goals'];
-    $awayTeam = $data[0]['away_team']['code'];
-    $awayTeamFlag = $flags[$awayTeam];
-    $awayTeamScore = $data[0]['away_team']['goals'];
-    $scoreLine = "$homeTeamFlag $homeTeamScore — $awayTeamScore $awayTeamFlag";
+    $cnt = count($data);
+    for ($n = 0; $n < $cnt; $n++) {
+        $status = $data[$n]['status'];
+        $homeTeam = $data[$n]['home_team']['code'];
+        $homeTeamFlag= $flags[$homeTeam];
+        $homeTeamScore = $data[$n]['home_team']['goals'];
+        $awayTeam = $data[$n]['away_team']['code'];
+        $awayTeamFlag = $flags[$awayTeam];
+        $awayTeamScore = $data[$n]['away_team']['goals'];
+        if ($status == 'in progress') $scoreLine = "$scoreLine$homeTeam $homeTeamScore"."-"."$awayTeamScore $awayTeam | dropdown=false\n";
+    }
 } else {
-    $scoreLine = "⚽";
+    $scoreLine = ":soccer:";    // :soccer:
 };
 
 $line = $bb->newLine();
-
 $line
     ->setText($scoreLine)
-    ->setFontFace("SF Mono")
     ->show();
 
 $todayJson = file_get_contents("http://worldcup.sfg.io/matches/today");
@@ -97,13 +98,10 @@ if (!empty($todayData)) {
         $team2code =  $todayData[$n]['away_team']['code'];
         $team2flag = $flags[$team2code];
         $team2s = $todayData[$n]['away_team']['goals'];
-        $scores = "$team1code $team1flag $team1s – $team2s $team2flag $team2code";
-        $match = "\"https://www.fifa.com/worldcup/matches/match/" . $todayData[$n]['fifa_id'] . "/#match-summary\"";
+        $scores = "$team1code $team1s"."-"."$team2s $team2code | ansi=true font=\"SF Mono\"";
+        $match = "https://www.fifa.com/worldcup/matches/match/" . $todayData[$n]['fifa_id'] . "/#match-summary";
         if (($todayData[$n]['status']) == "in progress") {
-            $time = $todayData[$n]['time'];
-            $scores = $scores . " " . $time . " ⚽| href=$match";
-        } else {
-            $scores .= " | href=$match";
+            $scores .= " | ansi=true font=\"SF Mono\"  href=$match\n";
         }
         if (($todayData[$n]['status'] == "completed") || ($todayData[$n]['status'] == "in progress")) {
             $line = $bb->newLine();
@@ -112,7 +110,7 @@ if (!empty($todayData)) {
             $arraySortEvents = array_msort($arrayEvents, array('id'=>SORT_ASC));
             foreach ($arraySortEvents as $val) {
                 if (in_array($val['type_of_event'], array('goal', "goal-own", "goal-penalty"))) {
-                    $scores .= "\n\033[35m";
+                    $scores .= "\n";
                     $scores .= $val['player'] . " " . $val['time'];
                 }
                 if ($val['type_of_event'] == "goal-penalty") {
@@ -122,28 +120,52 @@ if (!empty($todayData)) {
                     $scores .= " (OG)";
                 }
                 if (in_array($val['type_of_event'], array('red-card', "yellow-card"))) {
-                    $scores .= "\n\033[35m";
+                    $scores .= "\n";
                     $scores .= $val['player'] . " " . $val['time'];
                 }
                 if ($val['type_of_event'] == "yellow-card") {
-                    $scores .= " \033[1;33m◼\033[0m";
+                    $scores .= " \033[1;33m◼";
                 }
                 if ($val['type_of_event'] == "red-card") {
-                    $scores .= " \033[1;31m◼\033[0m";
+                    $scores .= " \033[1;31m◼";
                 }
                 $scores .= " | size=11";
             }
+            if (($todayData[$n]['status']) == "completed") {
+                $time = $todayData[$n]['time'];
+                $scores .= "\n FT";
+            }
+            if (($todayData[$n]['status']) == "in progress") {
+                $time = $todayData[$n]['time'];
+                $scores .= "\n :soccer: $time";
+            }
+            $scores .= " | size=11";
             $comGame = $line
                 ->setText($scores)
                 ->setDropdown(true);
             $comGame->show();
         } else {
+            if (($todayData[$n]['status']) == "future") {
+                $datetime = $todayData[$n]['datetime'];
+                $now = gmdate("Y-m-j\TH:i:s\Z", time() + 3600*($timezone+date("I")));
+                $until = dateDifference($datetime, $now);
+                $scores .= "|font=\"SF Mono\"\n in $until | size=10";
+            }
+
             $line = $bb->newLine();
             $line
                 ->setText($scores)
-                ->setFontFace("SF Mono")
                 ->setDropdown(true)
                 ->show();
         }
     }
+}
+
+function dateDifference($date_1 , $date_2 , $differenceFormat = '%H:%I' ) {
+    $datetime1 = date_create($date_1);
+    $datetime2 = date_create($date_2);
+    
+    $interval = date_diff($datetime1, $datetime2);
+    
+    return $interval->format($differenceFormat);  
 }
