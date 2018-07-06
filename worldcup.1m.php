@@ -13,7 +13,7 @@
  * @category Utility
  * @version  2.2
  * <bitbar.title>World Cup 2018</bitbar.title>
- * <bitbar.version>v2.1</bitbar.version>
+ * <bitbar.version>v2.2</bitbar.version>
  * <bitbar.author>Daniel Goldsmith, Matt Sephton</bitbar.author>
  * <bitbar.author.github>dg01d</bitbar.author.github>
  * <bitbar.desc>Shows current and daily scores from the 2018 World Cup. Needs Steve Edson's bitbar-php: https://github.com/SteveEdson/bitbar-php </bitbar.desc>
@@ -60,7 +60,8 @@ $flags = json_decode($flagsrc, true);
 // Create BitBar formatter
 $bb = new BitBar();
 
-$json = file_get_contents("http://worldcup.sfg.io/matches/current");
+$json = @file_get_contents("http://worldcup.sfg.io/matches/current");
+if($json === FALSE) exit;
 $data = json_decode($json, true);
 
 if (!empty($data)) {
